@@ -1,0 +1,9 @@
+# Wokwi Library List
+# See https://docs.wokwi.com/guides/libraries
+
+PubSubClient
+HCSR04 ultrasonic sensor
+Ultrasonic
+LiquidCrystal I2C
+DHT sensor library
+Adafruit Unified Sensor
