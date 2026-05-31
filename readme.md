@@ -162,11 +162,32 @@ Você precisará importar as seguintes bibliotecas no seu workspace:
 4.  Cole o conteúdo do arquivo [sketch.ino](firmware/sketch.ino) na guia de código principal.
 5.  Execute o simulador. O microcontrolador se conectará automaticamente à rede Wi-Fi virtual `Wokwi-GUEST` e enviará a telemetria ao broker do HiveMQ.
 
+### 📊 Painel de Visualização no Node-RED
+
+No repositório, disponibilizamos o arquivo [flows Hydrata.json](flows%20Hydrata.json) pré-configurado para carregar o Dashboard completo do projeto. 
+
+**Como funciona o fluxo do Node-RED:**
+*   **Conexão Segura**: O nó `mqtt-broker` se conecta criptografado ao HiveMQ (`2585265c020e418ba116d2601017a480.s1.eu.hivemq.cloud:8883`) com usuário e senha.
+*   **Parsing Automático**: Os nós MQTT In (`Sub Clima`, `Sub Luz` e `Sub Status`) estão configurados com o formato `datatype: "json"`, realizando a conversão do payload automaticamente para objeto JavaScript sem a necessidade de nós coletores extras.
+*   **Layout Visual**:
+    *   **Grupo Microclima Local**: Mostra a temperatura (°C) e a umidade do ar (%) em medidores tipo Gauge.
+    *   **Grupo Radiação Solar**: Apresenta a luminosidade mapeada do LDR (0% a 100%).
+    *   **Grupo Atuadores & Alertas**: Cartões de texto dinâmicos que exibem o estado formatado em cores e mensagens legíveis da Bomba de Irrigação (LIGADA/DESLIGADA) e do Alerta de Calor Crítico.
+
+**Como Importar o Dashboard:**
+1.  Abra a interface do seu **Node-RED**.
+2.  Clique no menu superior direito (ícone de hambúrguer com três barras) e vá em **Import**.
+3.  Carregue o arquivo [flows Hydrata.json](flows%20Hydrata.json) ou copie todo o seu conteúdo e cole na caixa de texto.
+4.  Clique no botão **Import**.
+5.  Clique em **Deploy** no canto superior direito do Node-RED.
+6.  Acesse a aba visual do Dashboard em `http://localhost:1880/ui` (ou na URL/porta equivalente onde o Node-RED estiver hospedado).
+
 ---
 
-## 🔗 Links e Recursos Adicionais
+## 🔗 Links e entregáveis
 
-*   **Link da Simulação Wokwi**: *[Inserir link público da simulação]*
-*   **Vídeo Demonstrativo (Apresentação)**: *[Inserir link do YouTube ou Drive]*
-*   **Dashboard de Monitoramento**: *[Inserir link do Dashboard/Interface]*
-*   **Código-Fonte Principal**: [sketch.ino](firmware/sketch.ino)
+*   **Vídeo Youtube (Apresentação)**: *[Inserir link do YouTube ou Drive]*
+*   **Código-Fonte Principal (ESP32)**: [sketch.ino](firmware/sketch.ino)
+*   **Fluxo do Dashboard (Node-RED)**: [flows Hydrata.json](flows%20Hydrata.json)
+*   **Github**: [link do github](https://github.com/vitalis-sa/GLOBAL-SOLUTION-2ANO-1SEM-IOT)
+

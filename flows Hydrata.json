@@ -1,0 +1,452 @@
+[
+    {
+        "id": "98f7df43ec05c43d",
+        "type": "tab",
+        "label": "HyDrata IoT Dashboard",
+        "disabled": false,
+        "info": "Fluxo criado para a Global Solution - FIAP. Subscreve nos tópicos do ESP32 via HiveMQ Cloud e exibe dados de clima, luz e atuadores."
+    },
+    {
+        "id": "cc8042ba3be7f5ab",
+        "type": "mqtt in",
+        "z": "98f7df43ec05c43d",
+        "name": "Sub Clima",
+        "topic": "FIAP/HYDRATA/CLIMA",
+        "qos": "0",
+        "datatype": "json",
+        "broker": "f890cf309e13a48e",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 110,
+        "y": 120,
+        "wires": [
+            [
+                "27fc90abda0f4e3c",
+                "7df9a071578e3ea9",
+                "f39003848b59e390"
+            ]
+        ]
+    },
+    {
+        "id": "7df9a071578e3ea9",
+        "type": "change",
+        "z": "98f7df43ec05c43d",
+        "name": "Temp",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.temperatura",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 450,
+        "y": 100,
+        "wires": [
+            [
+                "d01248fb2cde4b00"
+            ]
+        ]
+    },
+    {
+        "id": "f39003848b59e390",
+        "type": "change",
+        "z": "98f7df43ec05c43d",
+        "name": "Umid",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.umidade_ar",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 450,
+        "y": 140,
+        "wires": [
+            [
+                "e9bc04230b62e49c"
+            ]
+        ]
+    },
+    {
+        "id": "d01248fb2cde4b00",
+        "type": "ui_gauge",
+        "z": "98f7df43ec05c43d",
+        "name": "Gauge Temperatura",
+        "group": "9a81fb601a4e2ef3",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Temperatura Local",
+        "label": "°C",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "50",
+        "colors": [
+            "#55aaff",
+            "#00aa00",
+            "#ff0000"
+        ],
+        "seg1": "18",
+        "seg2": "37",
+        "diff": false,
+        "className": "",
+        "x": 660,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "e9bc04230b62e49c",
+        "type": "ui_gauge",
+        "z": "98f7df43ec05c43d",
+        "name": "Gauge Umidade",
+        "group": "9a81fb601a4e2ef3",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Umidade do Ar",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#ff3b30",
+            "#ffcc00",
+            "#007aff"
+        ],
+        "seg1": "40",
+        "seg2": "70",
+        "diff": false,
+        "className": "",
+        "x": 650,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "27fc90abda0f4e3c",
+        "type": "debug",
+        "z": "98f7df43ec05c43d",
+        "name": "Debug Clima",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 470,
+        "y": 50,
+        "wires": []
+    },
+    {
+        "id": "ab4501ed8fb9f42d",
+        "type": "mqtt in",
+        "z": "98f7df43ec05c43d",
+        "name": "Sub Luz",
+        "topic": "FIAP/HYDRATA/LUZ",
+        "qos": "0",
+        "datatype": "json",
+        "broker": "f890cf309e13a48e",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 100,
+        "y": 240,
+        "wires": [
+            [
+                "576cf3ef090d8ab9",
+                "f8ab90d3489fe20b"
+            ]
+        ]
+    },
+    {
+        "id": "f8ab90d3489fe20b",
+        "type": "change",
+        "z": "98f7df43ec05c43d",
+        "name": "Luminosidade",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.luminosidade",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 480,
+        "y": 240,
+        "wires": [
+            [
+                "3b49e0fba45cd89a"
+            ]
+        ]
+    },
+    {
+        "id": "3b49e0fba45cd89a",
+        "type": "ui_gauge",
+        "z": "98f7df43ec05c43d",
+        "name": "Gauge Luz",
+        "group": "7ba4f10cdcd6df9f",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Luminosidade (LDR)",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#5e5e5e",
+            "#ffea00",
+            "#ff7700"
+        ],
+        "seg1": "30",
+        "seg2": "70",
+        "className": "",
+        "x": 650,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "576cf3ef090d8ab9",
+        "type": "debug",
+        "z": "98f7df43ec05c43d",
+        "name": "Debug Luz",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 470,
+        "y": 190,
+        "wires": []
+    },
+    {
+        "id": "d89ab7ce0fae43ab",
+        "type": "mqtt in",
+        "z": "98f7df43ec05c43d",
+        "name": "Sub Status",
+        "topic": "FIAP/HYDRATA/STATUS",
+        "qos": "0",
+        "datatype": "json",
+        "broker": "f890cf309e13a48e",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 110,
+        "y": 360,
+        "wires": [
+            [
+                "5d9bc37df04ee2b9",
+                "b78fd4e0ca092edb",
+                "efab982d49e3bfcd"
+            ]
+        ]
+    },
+    {
+        "id": "5d9bc37df04ee2b9",
+        "type": "function",
+        "z": "98f7df43ec05c43d",
+        "name": "Formata Bomba",
+        "func": "if (msg.payload.bomba_ativa === true || msg.payload.bomba_ativa === \"true\") {\n    msg.payload = \"LIGADA (Irrigando)\";\n    msg.color = \"blue\";\n} else {\n    msg.payload = \"DESLIGADA\";\n    msg.color = \"grey\";\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 340,
+        "wires": [
+            [
+                "f47ad9d8c03e2e8a"
+            ]
+        ]
+    },
+    {
+        "id": "b78fd4e0ca092edb",
+        "type": "function",
+        "z": "98f7df43ec05c43d",
+        "name": "Formata Alerta",
+        "func": "if (msg.payload.alerta_critico === true || msg.payload.alerta_critico === \"true\") {\n    msg.payload = \"⚠️ CALOR TÉRMICO CRÍTICO (>=38°C)\";\n    msg.color = \"red\";\n} else {\n    msg.payload = \"SEGURO\";\n    msg.color = \"green\";\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 380,
+        "wires": [
+            [
+                "64fb7efd89a2ce0b"
+            ]
+        ]
+    },
+    {
+        "id": "f47ad9d8c03e2e8a",
+        "type": "ui_text",
+        "z": "98f7df43ec05c43d",
+        "group": "1e9ab7d3c0fb428e",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "Text Bomba",
+        "label": "Bomba d'Água:",
+        "format": "<span style='color:{{msg.color}}; font-weight:bold;'>{{msg.payload}}</span>",
+        "layout": "row-spread",
+        "className": "",
+        "x": 670,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "64fb7efd89a2ce0b",
+        "type": "ui_text",
+        "z": "98f7df43ec05c43d",
+        "group": "1e9ab7d3c0fb428e",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "Text Alerta",
+        "label": "Alerta Crítico:",
+        "format": "<span style='color:{{msg.color}}; font-weight:bold;'>{{msg.payload}}</span>",
+        "layout": "row-spread",
+        "className": "",
+        "x": 670,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "efab982d49e3bfcd",
+        "type": "debug",
+        "z": "98f7df43ec05c43d",
+        "name": "Debug Status",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 480,
+        "y": 430,
+        "wires": []
+    },
+    {
+        "id": "f890cf309e13a48e",
+        "type": "mqtt-broker",
+        "name": "HiveMQ Cloud (HyDrata)",
+        "broker": "2585265c020e418ba116d2601017a480.s1.eu.hivemq.cloud",
+        "port": "8883",
+        "tls": "ca0113f9c6d3ab0b",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": true,
+        "compatmode": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "9a81fb601a4e2ef3",
+        "type": "ui_group",
+        "name": "Microclima Local",
+        "tab": "04bb7ae674b89bfa",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "7ba4f10cdcd6df9f",
+        "type": "ui_group",
+        "name": "Radiação Solar",
+        "tab": "04bb7ae674b89bfa",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "1e9ab7d3c0fb428e",
+        "type": "ui_group",
+        "name": "Atuadores & Alertas",
+        "tab": "04bb7ae674b89bfa",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "ca0113f9c6d3ab0b",
+        "type": "tls-config",
+        "name": "TLS Criptografado",
+        "cert": "",
+        "key": "",
+        "ca": ""
+    },
+    {
+        "id": "04bb7ae674b89bfa",
+        "type": "ui_tab",
+        "name": "HyDrata - Telemetria",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "7b83d63cdaf92850",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6"
+        }
+    }
+]
