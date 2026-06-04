@@ -27,10 +27,15 @@ const char* mqtt_pass = "Vitalis1";
 const int mqtt_port = 8883; // Porta TLS Criptografada
 
 // Tópico para publicação dos dados em JSON
-const char* mqtt_topic_clima = "FIAP/HYDRATA/CLIMA";       // Tópico 1 (JSON de Temp/Umid)
-const char* mqtt_topic_luminosidade = "FIAP/HYDRATA/LUZ";  // Tópico 2 (JSON do LDR)
-const char* mqtt_topic_status = "FIAP/HYDRATA/STATUS";     // Tópico 3 (JSON dos Atuadores)
+// MAC Address Fixo do Dispositivo
+const String MAC_ADDRESS = "AA:BB:CC:DD:EE:FF"; 
 
+// Strings dos Tópicos dinâmicos (serão preenchidos com o MAC Address)
+String topic_clima;
+String topic_luminosidade;
+String topic_status;
+
+// ---------- INICIALIZAÇÃO DE OBJETOS ----------
 DHT dht(DHTPIN, DHTTYPE);
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
@@ -42,7 +47,7 @@ unsigned long tempoAnteriorCarrossel = 0;
 unsigned long tempoAnteriorMQTT = 0;
 
 const long intervaloCarrossel = 3000; // Alterna o LCD a cada 3 segundos
-const long intervaloMQTT = 5000;      // Envia dados ao broker a cada 5 segundos
+const long intervaloMQTT = 30000;      // Envia dados ao broker a cada 5 segundos
 
 int telaAtual = 0;
 
@@ -50,6 +55,7 @@ int telaAtual = 0;
 bool bombaLigada = false;
 bool alertaLigado = false;
 
+// ---------- FUNÇÃO SETUP WIFI ----------
 void setup_wifi() {
   delay(10);
   Serial.print("\nConectando ao WiFi: ");
@@ -61,23 +67,33 @@ void setup_wifi() {
     delay(500);
     Serial.print(".");
     
+    // Feedback visual rápido no LCD durante a conexão
     lcd.setCursor(0, 0);
     lcd.print("Conectando WiFi ");
   }
 
   Serial.println("\nWiFi Conectado com sucesso!");
+  
+  // Constroi os tópicos baseados no MAC Fixo
+  topic_clima = "FIAP/HYDRATA/" + MAC_ADDRESS + "/CLIMA";
+  topic_luminosidade = "FIAP/HYDRATA/" + MAC_ADDRESS + "/LUZ";
+  topic_status = "FIAP/HYDRATA/" + MAC_ADDRESS + "/STATUS";
+  Serial.println("MAC Address Fixo: " + MAC_ADDRESS);
+
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("WiFi: OK");
   delay(1000);
 }
 
+// ---------- FUNÇÃO RECONECTAR MQTT ----------
 void reconnect() {
   while (!client.connected()) {
     Serial.print("Tentando conexão MQTT...");
     lcd.setCursor(0, 1);
     lcd.print("MQTT: Conectando");
 
+    // Gerando um ID de cliente único para evitar conflitos de quedas no Broker
     String clientId = "ESP32Client-HyDrata-";
     clientId += String(random(0xffff), HEX);
 
@@ -98,13 +114,16 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Inicializando Sistema Completo HyDrata...");
 
+  // Configuração dos Pinos dos Atuadores
   pinMode(LED_BOMBA, OUTPUT);
   pinMode(LED_ALERTA, OUTPUT);
 
+  // Inicializa o Sensor DHT e Display LCD
   dht.begin();
   lcd.init();
   lcd.backlight();
   
+  // Tela inicial de Boot
   lcd.setCursor(0, 0);
   lcd.print("PROJETO HYDRATA");
   lcd.setCursor(0, 1);
@@ -112,12 +131,14 @@ void setup() {
   delay(2000);
   lcd.clear();
 
+  // Configurações de Rede
   setup_wifi();
-  espClient.setInsecure();
+  espClient.setInsecure(); // Permite conexão TLS na nuvem HiveMQ sem validação de certificado local estático
   client.setServer(mqtt_server, mqtt_port);
 }
 
 void loop() {
+  // Garante conexões ativas antes de processar
   if (WiFi.status() != WL_CONNECTED) {
     setup_wifi();
   }
@@ -126,13 +147,15 @@ void loop() {
   }
   client.loop();
 
+  // 1. LEITURA CONTÍNUA DOS SENSORES
   float umidadeAr = dht.readHumidity();
   float temperatura = dht.readTemperature();
   int leituraLDR = analogRead(LDRPIN);
   
+  // Mapeamento do LDR para escala percentual (0 a 100%)
   float luminosidade = map(leituraLDR, 0, 4095, 0, 100);
 
-
+  // Tratamento de segurança contra leituras corrompidas
   if (isnan(umidadeAr) || isnan(temperatura)) {
     Serial.println("Erro crítico: Falha na leitura do sensor DHT22!");
     return;
@@ -167,17 +190,17 @@ void loop() {
 
     // Tópico 1: Dados de Microclima (DHT22)
     snprintf(jsonBuffer, sizeof(jsonBuffer), "{\"temperatura\":%.1f,\"umidade_ar\":%.1f}", temperatura, umidadeAr);
-    client.publish(mqtt_topic_clima, jsonBuffer);
+    client.publish(topic_clima.c_str(), jsonBuffer);
 
     // Tópico 2: Dados de Radiação Solar (LDR)
     snprintf(jsonBuffer, sizeof(jsonBuffer), "{\"luminosidade\":%.0f}", luminosidade);
-    client.publish(mqtt_topic_luminosidade, jsonBuffer);
+    client.publish(topic_luminosidade.c_str(), jsonBuffer);
 
     // Tópico 3: Status de Operação Física (LEDs / Atuadores)
     snprintf(jsonBuffer, sizeof(jsonBuffer), "{\"bomba_ativa\":%s,\"alerta_critico\":%s}", 
              bombaLigada ? "true" : "false", 
              alertaLigado ? "true" : "false");
-    client.publish(mqtt_topic_status, jsonBuffer);
+    client.publish(topic_status.c_str(), jsonBuffer);
 
     Serial.println("-> Telemetria distribuída com sucesso nos 3 tópicos MQTT obrigatórios.");
   }
@@ -189,6 +212,7 @@ void loop() {
     lcd.clear();
   }
 
+  // Renderização das telas correspondentes
   if (telaAtual == 0) {
     lcd.setCursor(0, 0);
     lcd.print("Temp: ");
