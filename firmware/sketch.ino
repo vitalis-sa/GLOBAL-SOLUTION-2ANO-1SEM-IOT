@@ -47,7 +47,7 @@ unsigned long tempoAnteriorCarrossel = 0;
 unsigned long tempoAnteriorMQTT = 0;
 
 const long intervaloCarrossel = 3000; // Alterna o LCD a cada 3 segundos
-const long intervaloMQTT = 30000;      // Envia dados ao broker a cada 5 segundos
+const long intervaloMQTT = 3000;      // Envia dados ao broker a cada 5 segundos
 
 int telaAtual = 0;
 
@@ -135,6 +135,8 @@ void setup() {
   setup_wifi();
   espClient.setInsecure(); // Permite conexão TLS na nuvem HiveMQ sem validação de certificado local estático
   client.setServer(mqtt_server, mqtt_port);
+
+  client.setKeepAlive(60);
 }
 
 void loop() {
