@@ -11,7 +11,7 @@
         "type": "mqtt in",
         "z": "98f7df43ec05c43d",
         "name": "Sub Clima",
-        "topic": "FIAP/HYDRATA/CLIMA",
+        "topic": "FIAP/HYDRATA/AA:BB:CC:DD:EE:FF/CLIMA",
         "qos": "0",
         "datatype": "json",
         "broker": "f890cf309e13a48e",
@@ -161,7 +161,7 @@
         "type": "mqtt in",
         "z": "98f7df43ec05c43d",
         "name": "Sub Luz",
-        "topic": "FIAP/HYDRATA/LUZ",
+        "topic": "FIAP/HYDRATA/AA:BB:CC:DD:EE:FF/LUZ",
         "qos": "0",
         "datatype": "json",
         "broker": "f890cf309e13a48e",
@@ -254,7 +254,7 @@
         "type": "mqtt in",
         "z": "98f7df43ec05c43d",
         "name": "Sub Status",
-        "topic": "FIAP/HYDRATA/STATUS",
+        "topic": "FIAP/HYDRATA/AA:BB:CC:DD:EE:FF/STATUS",
         "qos": "0",
         "datatype": "json",
         "broker": "f890cf309e13a48e",
@@ -442,7 +442,7 @@
         "hidden": false
     },
     {
-        "id": "7b83d63cdaf92850",
+        "id": "6fe6bfa510494aad",
         "type": "global-config",
         "env": [],
         "modules": {
