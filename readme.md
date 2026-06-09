@@ -177,7 +177,7 @@ No repositório, disponibilizamos o arquivo [flows Hydrata.json](flows%20Hydrata
 
 ## 🔗 Links e entregáveis
 
-*   **Vídeo Youtube (Apresentação)**: [Assistir no YouTube](https://www.youtube.com/watch?v=ezYJmDnCXV4)
+*   **Vídeo Youtube (Apresentação)**: [Assistir no YouTube](https://www.youtube.com/watch?v=SI5nplptieQ)
 *   **Simulação Pública (Wokwi)**: [Acessar Projeto](https://wokwi.com/projects/463861824527714305)
 *   **Código-Fonte Principal (ESP32)**: [sketch.ino](firmware/sketch.ino)
 *   **Fluxo do Dashboard (Node-RED)**: [flows Hydrata.json](flows%20Hydrata.json)
