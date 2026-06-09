@@ -41,16 +41,19 @@ O HyDrata centraliza dados locais medidos por sensores IoT (umidade, temperatura
 
 O ecossistema HyDrata funciona através da integração de 7 camadas de tecnologia, nas quais o módulo IoT atua como captador e atuador na ponta física (Edge).
 
-```mermaid
-graph TD
-    OM["API Open-Meteo"] -->|Previsão de Chuvas (HTTP REST)| B["2. Dispositivo IoT (ESP32)"]
-    A["1. Dados Governamentais (ANA / INPE) - Mocks no Java"] -->|Integração Mockada| C["3. Backend APIs (Java / .NET)"]
-    B -->|Telemetria via Protocolo MQTT (TLS)| C
-    C -->|Persistência| D["4. Banco de Dados (Oracle 19c)"]
-    C -->|Diagnósticos/Prompting| G["IA Generativa (Geração de Mensagens)"]
-    C -->|Deploy em Containers| E["5. DevOps & Cloud (Docker / Azure)"]
-    C -->|Consumo REST| F["6. App Mobile (React Native)"]
-    H["7. Compliance & Governança (TOGAF / ArchiMate)"] -.- C
+```text
+[ API Open-Meteo ] 
+       │ (Previsão via HTTP REST)
+       ▼
+[ 2. Dispositivo IoT (ESP32) ] 
+       │ 
+       │ (Telemetria via MQTT/TLS,mandando os dados dos sensores)
+       ▼
+[ 3. Backend APIs (Java / .NET) ] ◀── (Mocks de Integração) ── [ 1. Dados Governamentais (ANA / INPE) ]
+       │
+       ├─▶ [ 4. Banco de Dados (Oracle 19c) ] -> Persistência
+       ├─▶ [ 5. DevOps & Cloud (Docker / Azure) ] -> Deploy
+       ├─▶ [ 6. App Mobile (React Native) ] -> Consumo REST
 ```
 
 ### Detalhamento das Camadas e Stacks:
@@ -63,8 +66,6 @@ graph TD
 4.  **Banco de Dados**: Servidor **Oracle 19c** contendo o modelo físico relacional de dados (leituras dos sensores, dados externos das APIs de satélite e logs de alertas gerados).
 5.  **DevOps & Cloud**: Empacotamento de toda a infraestrutura em containers **Docker** com deploy orquestrado para a nuvem **Microsoft Azure**.
 6.  **Mobile App**: Aplicativo desenvolvido em **React Native** para que o produtor visualize o dashboard de sua fazenda de forma simples e intuitiva.
-7.  **Compliance**: Documentação formal da arquitetura empresarial do ecossistema segundo a especificação **TOGAF** e modelagem em **ArchiMate**.
-
 ---
 
 
@@ -142,7 +143,7 @@ Você precisará importar as seguintes bibliotecas no seu workspace:
 
 ### Instruções para Simulação no Wokwi
 
-1.  Acesse diretamente o nosso projeto público já configurado: **[Projeto HyDrata no Wokwi](https://wokwi.com/projects/463861824527714305)**
+1.  Acesse diretamente o nosso projeto público já configurado: **[Projeto HyDrata no Wokwi](https://wokwi.com/projects/466390759468490753)**
 2.  Ou, se preferir montar do zero, abra o [Wokwi](https://wokwi.com) e crie um circuito utilizando a placa **ESP32 DevKit V1**.
 3.  Realize a conexão dos cabos seguindo os pinos configurados no código:
     *   **DHT22**: GPIO `15`
