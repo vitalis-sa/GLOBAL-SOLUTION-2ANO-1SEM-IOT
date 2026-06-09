@@ -13,7 +13,7 @@
 #include <ArduinoJson.h>
 
 // ---------- PINAGEM ----------
-#define DHTPIN 15
+#define DHTPIN 14
 #define DHTTYPE DHT22
 #define LDRPIN 34
 #define LED_BOMBA 2    // LED Azul
