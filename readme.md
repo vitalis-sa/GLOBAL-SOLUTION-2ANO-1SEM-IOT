@@ -5,12 +5,16 @@ Esta documentação detalha o módulo de **Internet das Coisas (IoT)** da plataf
 ---
 
 ## 👥 Integrantes do Grupo
-*   **Ana Flavia Camelo** - RM561489
-*   **Gustavo Kenji Terada** - RM562745
-*   **João Guilherme Carvalho Novaes** - RM566234
-*   **Pedro Chasci Puga** - RM565154
-*   **Lucas Figueiredo Vieira** - RM561342
-*   **Turma**: 2TDSPV
+
+**Turma:** 2TDSPV
+
+| RM | Nome Completo |
+| :--- | :--- |
+| RM561489 | Ana Flavia Camelo |
+| RM562745 | Gustavo Kenji Terada |
+| RM566234 | João Guilherme Carvalho Novaes |
+| RM565154 | Pedro Chasci Puga |
+| RM561342 | Lucas Figueiredo Vieira |
 
 ---
 
@@ -19,10 +23,10 @@ Esta documentação detalha o módulo de **Internet das Coisas (IoT)** da plataf
 O **HyDrata** é uma plataforma de monitoramento hídrico e otimização de irrigação desenhada para ajudar pequenos e médios produtores rurais a tomarem decisões inteligentes de manejo, além de alertá-los contra desastres ecológicos (secas severas, enchentes locais e focos de incêndio próximos). 
 
 ### 🚨 O Problema
-Pequenos e médios agricultores costumam irrigar suas lavouras de forma intuitiva, gerando desperdício desnecessário de água e energia elétrica (acionamento excessivo de bombas). Ao mesmo tempo, dados técnicos cruciais gerados por satélites e órgãos oficiais (como ANA, INPE e INMET) não chegam de forma acessível e direta a quem está no campo. A falta de informações consolidadas resulta em decisões tomadas às cegas e alta vulnerabilidade a intempéries climáticas.
+Pequenos e médios agricultores costumam irrigar suas lavouras de forma intuitiva, gerando desperdício desnecessário de água e energia elétrica (acionamento excessivo de bombas). Ao mesmo tempo, dados técnicos cruciais de previsões climáticas e órgãos oficiais (como ANA e INPE) não chegam de forma acessível e direta a quem está no campo. A falta de informações consolidadas resulta em decisões tomadas às cegas e alta vulnerabilidade a intempéries climáticas.
 
 ### 💡 A Solução Principal
-O HyDrata centraliza dados locais medidos por sensores (umidade, temperatura e luminosidade) e os cruza com fontes de dados espaciais (satélites meteorológicos e de monitoramento). A principal entrega para o produtor é uma recomendação simplificada: 
+O HyDrata centraliza dados locais medidos por sensores IoT (umidade, temperatura e luminosidade) e os cruza com previsões meteorológicas em tempo real através da API do **Open-Meteo** (consumida diretamente pelo microcontrolador ESP32). No backend em Java, também são consolidadas métricas de órgãos governamentais como **ANA e INPE** (neste projeto, simulados como mocks aleatorizados para fins de demonstração arquitetural). A principal entrega para o produtor é uma recomendação simplificada: 
 > **"IRRIGAR HOJE? SIM ou NÃO"**
 
 ### 📈 Benefícios Mensuráveis
@@ -39,8 +43,9 @@ O ecossistema HyDrata funciona através da integração de 7 camadas de tecnolog
 
 ```mermaid
 graph TD
-    A["1. Satélites (ANA, INPE, NASA, INMET)"] -->|APIs Rest| C["3. Backend APIs (Java / .NET)"]
-    B["2. Dispositivo IoT (ESP32)"] -->|Protocolo MQTT (TLS)| C
+    OM["API Open-Meteo"] -->|Previsão de Chuvas (HTTP REST)| B["2. Dispositivo IoT (ESP32)"]
+    A["1. Dados Governamentais (ANA / INPE) - Mocks no Java"] -->|Integração Mockada| C["3. Backend APIs (Java / .NET)"]
+    B -->|Telemetria via Protocolo MQTT (TLS)| C
     C -->|Persistência| D["4. Banco de Dados (Oracle 19c)"]
     C -->|Diagnósticos/Prompting| G["IA Generativa (Geração de Mensagens)"]
     C -->|Deploy em Containers| E["5. DevOps & Cloud (Docker / Azure)"]
@@ -50,10 +55,10 @@ graph TD
 
 ### Detalhamento das Camadas e Stacks:
 
-1.  **Fontes Espaciais**: Consumo das APIs públicas do **INPE** (BDQueimadas), **NASA** (FIRMS), **ANA** (HidroWebService) e **Open-Meteo** para obter previsões de chuvas e monitoramento de satélite.
-2.  **Módulo IoT (ESP32)**: O circuito físico monitora o microclima local em tempo real e envia os dados consolidados via rede Wi-Fi para a nuvem usando o protocolo **MQTT**.
+1.  **Fontes Externas e Governamentais**: A API meteorológica **Open-Meteo** é consumida *diretamente* pela placa IoT (ESP32) para cruzamento de dados de chuva e umidade. Para fins de composição do ecossistema amplo, a API Java consome dados da **ANA** e **INPE** (implementados como *mocks* aleatorizados no backend para representar o risco hídrico e de queimadas).
+2.  **Módulo IoT (ESP32)**: O circuito físico monitora o microclima local em tempo real, consulta as previsões de precipitação da API Open-Meteo e envia os dados consolidados via rede Wi-Fi para a nuvem usando o protocolo **MQTT**.
 3.  **Backend APIs**:
-    *   **Java (Spring Boot)**: Processa as regras de negócio centrais, consome as APIs espaciais e orquestra a geração de alertas integrados.
+    *   **Java (Spring Boot)**: Processa telemetria, gera relatórios climáticos integrando os mocks de ANA/INPE, e orquestra a geração de alertas.
     *   **C# (.NET)**: Responsável pelo gerenciamento de cadastros de produtores, propriedades agrícolas e cooperativas parceiras.
 4.  **Banco de Dados**: Servidor **Oracle 19c** contendo o modelo físico relacional de dados (leituras dos sensores, dados externos das APIs de satélite e logs de alertas gerados).
 5.  **DevOps & Cloud**: Empacotamento de toda a infraestrutura em containers **Docker** com deploy orquestrado para a nuvem **Microsoft Azure**.
@@ -62,23 +67,7 @@ graph TD
 
 ---
 
-## 📋 Requisitos da Entrega de IoT & Mapeamento
 
-Abaixo está o mapeamento detalhado de como os requisitos específicos da matéria de IoT estão cobertos pelo protótipo construído:
-
-| Requisito do Edital | Implementação Técnica no HyDrata | Arquivos Referência |
-| :--- | :--- | :--- |
-| **Microcontrolador ESP32** | Placa de desenvolvimento utilizada como cérebro da ponta física para controle e rede. | [sketch.ino](firmware/sketch.ino) |
-| **Mínimo de 2 Entradas** | 1. **Sensor DHT22**: Temperatura e Umidade do Ar.<br>2. **Sensor LDR**: Luminosidade/Irradiação Solar. | [sketch.ino (Linhas 14-16)](firmware/sketch.ino#L14-L16) |
-| **Mínimo de 2 Saídas** | 1. **LED Azul (Bomba)**: Simula o acionamento de uma bomba de irrigação.<br>2. **LED Vermelho (Alerta)**: Alerta luminoso para calor térmico extremo. | [sketch.ino (Linhas 17-18)](firmware/sketch.ino#L17-L18) |
-| **Interface Local (LCD)** | Display LCD 16x2 (I2C) com carrossel dinâmico não-bloqueante a cada 3 segundos. | [sketch.ino (Linhas 197-230)](firmware/sketch.ino#L197-L230) |
-| **Conexão Wi-Fi** | Conexão de rede sem fio automática com suporte a reconexão em caso de queda. | [sketch.ino (Linhas 55-76)](firmware/sketch.ino#L55-L76) |
-| **Comunicação MQTT** | Conectividade segura e criptografada (TLS, porta 8883) com o HiveMQ Cloud. | [sketch.ino (Linhas 78-100)](firmware/sketch.ino#L78-L100) |
-| **Endpoints JSON/MQTT** | Envio periódico (a cada 5s) de telemetria estruturada em JSON para 3 tópicos distintos. | [sketch.ino (Linhas 174-195)](firmware/sketch.ino#L174-L195) |
-| **Dashboard de Dados** | Interface para monitoramento visual dos tópicos MQTT e histórico de leituras. | *[Inserir link do Dashboard]* |
-| **Vídeo de até 3 Minutos** | Vídeo contendo a proposta conceitual da solução e o funcionamento do circuito simulado. | *[Inserir link do vídeo]* |
-
----
 
 ## 🛠️ Detalhamento do Circuito IoT
 
@@ -92,16 +81,16 @@ O circuito utiliza componentes clássicos de fácil integração e baixo custo:
 
 ---
 
-## 🧠 Lógica de Controle Local (Edge Computing)
+## 🧠 Lógica de Controle Local e Integração Externa (Edge Computing)
 
-Para garantir o funcionamento mínimo do sistema mesmo na falta temporária de sinal de internet, o ESP32 roda lógica local de controle de atuadores:
+O ESP32 cruza as variáveis de hardware físico com os dados externos da API **Open-Meteo** para uma tomada de decisão inteligente na borda:
 
 1.  **Gatilho de Irrigação (LED Azul)**:
-    *   *Regra*: Se a umidade do ar for inferior a **40.0%** **E** a luminosidade ambiente estiver acima de **70%** (indicando dia ensolarado e seco).
-    *   *Comportamento*: Liga a bomba d'água para manter a plantação estável. Caso contrário, mantém a bomba desligada para economizar recursos.
+    *   *Regra*: Se a umidade do ar for inferior a **40.0%**, a luminosidade ambiente estiver acima de **70%** (indicando dia ensolarado e seco) **E** a previsão externa de precipitação (Open-Meteo) for nula.
+    *   *Comportamento*: Liga a bomba d'água. Se houver previsão de chuva pela API, a bomba permanece desligada para economizar recursos hídricos.
 2.  **Gatilho de Calor Extremo (LED Vermelho)**:
-    *   *Regra*: Se a temperatura ambiente detectada for maior ou igual a **38.0 °C** (risco iminente de desidratação severa ou queimadas próximas).
-    *   *Comportamento*: Aciona o alerta crítico.
+    *   *Regra*: Se a temperatura ambiente detectada for maior ou igual a **38.0 °C**, a temperatura externa medida pelo Open-Meteo for >= 38.0 °C, **OU** a umidade do ar cair para um índice crítico inferior a 30%.
+    *   *Comportamento*: Aciona o alerta luminoso crítico para risco iminente de queimadas ou dessecação da lavoura.
 
 ---
 
@@ -110,7 +99,7 @@ Para garantir o funcionamento mínimo do sistema mesmo na falta temporária de s
 A telemetria é distribuída em formato JSON a cada **5 segundos** por meio dos seguintes tópicos:
 
 ### 1. Dados de Clima e Ambiente
-*   **Tópico**: `FIAP/HYDRATA/CLIMA`
+*   **Tópico**: `FIAP/HYDRATA/AA:BB:CC:DD:EE:FF/CLIMA`
 *   **Payload**:
     ```json
     {
@@ -120,7 +109,7 @@ A telemetria é distribuída em formato JSON a cada **5 segundos** por meio dos 
     ```
 
 ### 2. Dados de Radiação Solar (Luz)
-*   **Tópico**: `FIAP/HYDRATA/LUZ`
+*   **Tópico**: `FIAP/HYDRATA/AA:BB:CC:DD:EE:FF/LUZ`
 *   **Payload**:
     ```json
     {
@@ -129,7 +118,7 @@ A telemetria é distribuída em formato JSON a cada **5 segundos** por meio dos 
     ```
 
 ### 3. Status Operacional dos Atuadores
-*   **Tópico**: `FIAP/HYDRATA/STATUS`
+*   **Tópico**: `FIAP/HYDRATA/AA:BB:CC:DD:EE:FF/STATUS`
 *   **Payload**:
     ```json
     {
@@ -146,13 +135,15 @@ Você precisará importar as seguintes bibliotecas no seu workspace:
 2.  **LiquidCrystal I2C** (driver do display LCD)
 3.  **DHT sensor library** (driver do sensor de clima)
 4.  **Adafruit Unified Sensor** (dependência do driver DHT)
+5.  **ArduinoJson** (manipulação de dados JSON da API)
+6.  **HTTPClient** (requisições HTTP para a API externa)
 
 *(Consulte o arquivo [libraries.txt](firmware/libraries.txt) para detalhes sobre as versões).*
 
 ### Instruções para Simulação no Wokwi
 
-1.  Abra o [Wokwi](https://wokwi.com).
-2.  Crie um circuito utilizando a placa **ESP32 DevKit V1**.
+1.  Acesse diretamente o nosso projeto público já configurado: **[Projeto HyDrata no Wokwi](https://wokwi.com/projects/463861824527714305)**
+2.  Ou, se preferir montar do zero, abra o [Wokwi](https://wokwi.com) e crie um circuito utilizando a placa **ESP32 DevKit V1**.
 3.  Realize a conexão dos cabos seguindo os pinos configurados no código:
     *   **DHT22**: GPIO `15`
     *   **LDR**: GPIO `34` (analógica)
@@ -186,7 +177,8 @@ No repositório, disponibilizamos o arquivo [flows Hydrata.json](flows%20Hydrata
 
 ## 🔗 Links e entregáveis
 
-*   **Vídeo Youtube (Apresentação)**: *[Inserir link do YouTube ou Drive]*
+*   **Vídeo Youtube (Apresentação)**: [Assistir no YouTube](https://www.youtube.com/watch?v=ezYJmDnCXV4)
+*   **Simulação Pública (Wokwi)**: [Acessar Projeto](https://wokwi.com/projects/463861824527714305)
 *   **Código-Fonte Principal (ESP32)**: [sketch.ino](firmware/sketch.ino)
 *   **Fluxo do Dashboard (Node-RED)**: [flows Hydrata.json](flows%20Hydrata.json)
 *   **Github**: [link do github](https://github.com/vitalis-sa/GLOBAL-SOLUTION-2ANO-1SEM-IOT)
